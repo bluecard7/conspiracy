@@ -12,4 +12,10 @@ html, body, #app {
 
 #menu {
   position: absolute;
+  display: flex;
+}
+
+.control {
+  height: 30px;
+  margin: 0;
 }

@@ -1,18 +1,16 @@
 import { select } from 'd3'
 import { hexbin } from 'd3-hexbin'
 
-import { setupMenu } from './menu'
+import { setupMenu, getSize, getColor, inAddMode, inDeleteMode } from './menu'
 import './style.css'
 /*
-  Menu to change size, color of hexagons (maybe even shape)
-    - also delete shapes
+  change shape?
   Persist points in client storage (maybe with redis)
   Associate points with notes
 */
 
 setupMenu();
-
-const hbin = hexbin().radius(20);
+const hbin = hexbin().radius(getSize());
 const svg = select('#app')
   .append('svg')
   .attr('width', '100%')
@@ -30,11 +28,19 @@ const view = select('#app')
 */
 
 function renderNote({ x, y }) {
+  if (inDeleteMode()) {
+    return;
+  }
+
+  hbin.radius(getSize())
   svg.append('path')
-    .attr('fill', 'none')
-    .attr('stroke', 'green')
+    .attr('fill', 'transparent')
+    .attr('stroke', getColor())
     .attr('d', `M${x},${y}${hbin.hexagon()}`)
     .on('mouseenter', () => { /* view note in tooltip or viewing area */ })
+    .on('click', function() { 
+      inDeleteMode() && svg.node().removeChild(this) 
+    })
 }
   
 svg.on('click', e => {
