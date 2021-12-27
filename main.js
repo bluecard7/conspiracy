@@ -2,15 +2,12 @@ import { select } from 'd3'
 import { hexbin } from 'd3-hexbin'
 
 import { setupMenu, getSize, getColor, inAddMode, inDeleteMode } from './menu'
+import { setupDB, addNote, deleteNote, streamNotes } from './persistence'
 import './style.css'
-/*
-  change shape?
-  Persist points in client storage (maybe with redis)
-  Associate points with notes
-*/
 
-setupMenu();
-const hbin = hexbin().radius(getSize());
+setupDB().then(() => streamNotes(renderNote))
+setupMenu()
+const hbin = hexbin().radius(getSize())
 const svg = select('#app')
   .append('svg')
   .attr('width', '100%')
@@ -28,35 +25,28 @@ const view = select('#app')
 */
 
 function renderNote({ x, y }) {
-  if (inDeleteMode()) {
-    return;
-  }
-
   hbin.radius(getSize())
   svg.append('path')
     .attr('fill', 'transparent')
     .attr('stroke', getColor())
     .attr('d', `M${x},${y}${hbin.hexagon()}`)
+    .attr('data-id', `${x}${y}`)
+    // only required if searching notes in a selected section
+    // .attr('data-x', x)
+    // .attr('data-y', y)
     .on('mouseenter', () => { /* view note in tooltip or viewing area */ })
-    .on('click', function() { 
-      inDeleteMode() && svg.node().removeChild(this) 
+    .on('click', function() {
+      if (inDeleteMode()) {
+        deleteNote(`${x}${y}`).then(svg.node().removeChild(this)) 
+      }
     })
 }
   
 svg.on('click', e => {
-    renderNote({
-      x: e.clientX, 
-      y: e.clientY,
-    });
-  })
+  if (inAddMode()) {
+    const { clientX: x, clientY: y } = e ?? {};
+    addNote(`${x}${y}`, [x, y], 'this is a test note')
+      .then(() => renderNote({ x, y }))
+  }
+})
 
-const points = [
-  [400, 200],
-  [100, 100],
-]
-
-svg.selectAll('path')
-  .data(hbin(points))
-  .enter().append('path')
-  .attr('fill', 'green')
-  .attr('d', renderNote)
