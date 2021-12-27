@@ -1,13 +1,16 @@
-import './style.css'
 import { select } from 'd3'
 import { hexbin } from 'd3-hexbin'
 
-const color = () => {
-  return () => {
+import { setupMenu } from './menu'
+import './style.css'
+/*
+  Menu to change size, color of hexagons (maybe even shape)
+    - also delete shapes
+  Persist points in client storage (maybe with redis)
+  Associate points with notes
+*/
 
-  }
-}
-
+setupMenu();
 
 const hbin = hexbin().radius(20);
 const svg = select('#app')
@@ -15,6 +18,7 @@ const svg = select('#app')
   .attr('width', '100%')
   .attr('height', '100%')
 
+/*
 const view = select('#app')
   .append('div')
   .style('z-index', 10)
@@ -23,6 +27,7 @@ const view = select('#app')
   .style('width', '100%')
   .style('height', '150px')
   .style('border-top', '1px solid green')
+*/
 
 function renderNote({ x, y }) {
   svg.append('path')
