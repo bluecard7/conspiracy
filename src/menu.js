@@ -40,9 +40,8 @@ controls.forEach(control => {
   control.className = 'control' 
 })
 
+const appDiv = document.querySelector('#app')
 export function setupMenu() {
-  const appDiv = document.querySelector('#app')
-
   document.addEventListener('keydown', e => {
     if (e.key === '?') {
       document.querySelector('#menu')

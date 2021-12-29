@@ -7,7 +7,17 @@
     <title>conspiracy</title>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/main.js"></script>
+    <div id="app">
+      <div id="notepad-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+          <textarea id="notepad" rows="10" cols="50"></textarea>
+          <div>
+            <button id="discard-button">Discard note</button>
+            <button id="create-button">Create note</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>

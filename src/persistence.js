@@ -24,13 +24,13 @@ export function setupDB() {
   })
 }
 
-export function addNote(id, [x, y], content) {
+export function addNote(note) {
   let request = db.transaction([storeName], 'readwrite')
     .objectStore(storeName)
-    .add({ id, x, y, content })
+    .add(note)
   
   return new Promise((resolve, reject) => {
-    request.onsuccess = resolve
+    request.onsuccess = () => resolve(note)
     request.onerror = reject
   })
 }
