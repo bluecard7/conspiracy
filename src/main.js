@@ -49,5 +49,43 @@ svg.on('click', e => {
   }
 })
 
+function makeDraggable(evt) {
+  // const svg = evt.target;
+  let selectedElement = null;
+  let offset;
+  svg.on('mousedown', startDrag);
+  svg.on('mousemove', drag);
+  svg.on('mouseup', endDrag);
+  svg.on('mouseleave', endDrag);
+  function startDrag(evt) {
+    if (evt.target.classList.contains('draggable')) {
+      selectedElement = evt.target;
+      offset = getMousePosition(evt)
+      offset.x -= parseFloat(selectedElement.getAttributeNS(null, "x"));
+      offset.y -= parseFloat(selectedElement.getAttributeNS(null, "y"));
+    }
+  }
+
+  function getMousePosition(evt) {
+    let CTM = svg.getScreenCTM();
+    return {
+      x: (evt.clientX - CTM.e) / CTM.a,
+      y: (evt.clientY - CTM.f) / CTM.d,
+    }
+  }
+
+  function drag(evt) {
+    if (selectedElement) {
+      evt.preventDefault();
+      let coord = getMousePosition(evt)
+      selectedElement.setAttributeNS(null, "x", coord.x - offset.x);
+      selectedElement.setAttributeNS(null, "y", coord.y - offset.y);
+    }
+  }
+  function endDrag(evt) {
+    selectedElement = null;
+  }
+}
+
 setupDB().then(() => streamNotes(renderNote))
 setupMenu()
